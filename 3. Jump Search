@@ -1,0 +1,37 @@
+#include <iostream>
+#include <cmath> // Para a função sqrt
+using namespace std;
+
+int jumpSearch(int arr[], int size, int target) {
+    int step = sqrt(size);
+
+    int prev = 0;
+
+    while (arr[min(step, size) - 1] < target) {
+        prev = step; // Move para o próximo bloco
+        step += sqrt(size); // Incrementa o salto
+
+        if (prev >= size)
+            return -1;
+    }
+    for (int i = prev; i < min(step, size); i++) {
+        if (arr[i] == target)
+            return i;
+    }
+    return -1;
+}
+
+int main() {
+    int arr[] = {3, 6, 8, 12, 15, 18, 22, 25, 30, 35};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    int target = 18;
+
+    int result = jumpSearch(arr, size, target);
+
+    if (result != -1)
+        printf("Elemento %d encontrado no índice %d\n", target, result);
+    else
+        printf("Elemento %d não encontrado\n", target);
+
+    return 0;
+}

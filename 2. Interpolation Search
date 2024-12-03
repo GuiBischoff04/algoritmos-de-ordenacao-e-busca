@@ -1,0 +1,49 @@
+#include <iostream>
+using namespace std;
+
+int interpolationSearch(int arr[], int size, int target) {
+    int left = 0, right = size - 1;
+
+    while (left <= right && target >= arr[left] && target <= arr[right]) {
+    
+        if (left == right) {
+            if (arr[left] == target) return left;
+            return -1;
+        }
+        int pos = left + ((target - arr[left]) * (right - left)) / (arr[right] - arr[left]);
+
+        if (arr[pos] == target)
+            return pos;
+
+        if (arr[pos] < target)
+            left = pos + 1; // Busca à direita
+        else
+            right = pos - 1; // Busca à esquerda
+    }
+
+    return -1;
+}
+
+int main() {
+    int uniformArr[] = {10, 20, 30, 40, 50};
+    int uniformSize = sizeof(uniformArr) / sizeof(uniformArr[0]);
+    int uniformTarget = 40;
+
+    int nonUniformArr[] = {3, 6, 8, 12, 15, 25, 50};
+    int nonUniformSize = sizeof(nonUniformArr) / sizeof(nonUniformArr[0]);
+    int nonUniformTarget = 25;
+
+    int resultUniform = interpolationSearch(uniformArr, uniformSize, uniformTarget);
+    if (resultUniform != -1)
+        printf("Elemento %d encontrado no índice %d (Lista Uniforme)\n", uniformTarget, resultUniform);
+    else
+        printf("Elemento %d não encontrado (Lista Uniforme)\n", uniformTarget);
+
+    int resultNonUniform = interpolationSearch(nonUniformArr, nonUniformSize, nonUniformTarget);
+    if (resultNonUniform != -1)
+        printf("Elemento %d encontrado no índice %d (Lista Não Uniforme)\n", nonUniformTarget, resultNonUniform);
+    else
+        printf("Elemento %d não encontrado (Lista Não Uniforme)\n", nonUniformTarget);
+
+    return 0;
+}

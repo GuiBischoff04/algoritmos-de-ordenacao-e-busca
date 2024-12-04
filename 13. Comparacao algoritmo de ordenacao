@@ -1,0 +1,256 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <chrono>
+
+using namespace std;
+using namespace chrono;
+
+void printArray(const vector<int>& arr) {
+    for (int num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+}
+
+//--------------------- Shell Sort ---------------------
+int shellComparisons = 0;
+
+void shellSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j;
+            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                arr[j] = arr[j - gap];
+                shellComparisons++;
+            }
+            arr[j] = temp;
+        }
+    }
+}
+
+//--------------------- Merge Sort ---------------------
+int mergeComparisons = 0;
+
+void merge(vector<int>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    vector<int> L(n1), R(n2);
+
+    for (int i = 0; i < n1; i++) L[i] = arr[left + i];
+    for (int j = 0; j < n2; j++) R[j] = arr[mid + 1 + j];
+
+    int i = 0, j = 0, k = left;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+        mergeComparisons++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int left, int right) {
+    if (left >= right) return;
+
+    int mid = left + (right - left) / 2;
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    merge(arr, left, mid, right);
+}
+
+//--------------------- Selection Sort ---------------------
+int selectionComparisons = 0;
+
+void selectionSort(vector<int>& arr) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j < n; j++) {
+            selectionComparisons++;
+            if (arr[j] < arr[minIdx]) {
+                minIdx = j;
+            }
+        }
+        swap(arr[i], arr[minIdx]);
+    }
+}
+
+//--------------------- Quick Sort ---------------------
+int quickComparisons = 0;
+
+int partition(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j <= high - 1; j++) {
+        quickComparisons++;
+        if (arr[j] <= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quickSort(vector<int>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+//--------------------- Bucket Sort ---------------------
+int bucketComparisons = 0;
+
+void bucketSort(vector<int>& arr) {
+    int n = arr.size();
+    if (n <= 1) return;
+
+    float minVal = *min_element(arr.begin(), arr.end());
+    float maxVal = *max_element(arr.begin(), arr.end());
+    int bucketCount = n;
+    vector<vector<int>> buckets(bucketCount);
+
+    float range = (maxVal - minVal) / bucketCount;
+
+    for (int i = 0; i < n; i++) {
+        int bucketIdx = (arr[i] - minVal) / range;
+        if (bucketIdx == bucketCount) bucketIdx--;
+        buckets[bucketIdx].push_back(arr[i]);
+    }
+
+    for (int i = 0; i < bucketCount; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+        bucketComparisons += buckets[i].size();
+    }
+
+    int idx = 0;
+    for (int i = 0; i < bucketCount; i++) {
+        for (int num : buckets[i]) {
+            arr[idx++] = num;
+        }
+    }
+}
+
+//--------------------- Radix Sort ---------------------
+int radixComparisons = 0;
+
+void countingSortByDigit(vector<int>& arr, int exp) {
+    int n = arr.size();
+    vector<int> output(n);
+    int count[10] = {0};
+
+    for (int i = 0; i < n; i++) {
+        count[(arr[i] / exp) % 10]++;
+    }
+
+    for (int i = 1; i < 10; i++) {
+        count[i] += count[i - 1];
+    }
+
+    for (int i = n - 1; i >= 0; i--) {
+        int digit = (arr[i] / exp) % 10;
+        output[count[digit] - 1] = arr[i];
+        count[digit]--;
+    }
+
+    for (int i = 0; i < n; i++) {
+        arr[i] = output[i];
+    }
+}
+
+void radixSort(vector<int>& arr) {
+    int maxElement = *max_element(arr.begin(), arr.end());
+
+    for (int exp = 1; maxElement / exp > 0; exp *= 10) {
+        countingSortByDigit(arr, exp);
+    }
+}
+
+//--------------------- Função principal ---------------------
+int main() {
+    vector<int> arr = {37, 23, 0, 17, 12, 72, 31, 46, 100, 88};
+
+    // Shell Sort
+    vector<int> shellArr = arr;
+    auto start = high_resolution_clock::now();
+    shellSort(shellArr);
+    auto end = high_resolution_clock::now();
+    cout << "Shell Sort: ";
+    printArray(shellArr);
+    cout << "Comparações: " << shellComparisons << endl;
+    cout << "Tempo: " << duration_cast<microseconds>(end - start).count() << " microsegundos" << endl;
+
+    // Merge Sort
+    vector<int> mergeArr = arr;
+    start = high_resolution_clock::now();
+    mergeSort(mergeArr, 0, mergeArr.size() - 1);
+    end = high_resolution_clock::now();
+    cout << "\nMerge Sort: ";
+    printArray(mergeArr);
+    cout << "Comparações: " << mergeComparisons << endl;
+    cout << "Tempo: " << duration_cast<microseconds>(end - start).count() << " microsegundos" << endl;
+
+    // Selection Sort
+    vector<int> selectionArr = arr;
+    start = high_resolution_clock::now();
+    selectionSort(selectionArr);
+    end = high_resolution_clock::now();
+    cout << "\nSelection Sort: ";
+    printArray(selectionArr);
+    cout << "Comparações: " << selectionComparisons << endl;
+    cout << "Tempo: " << duration_cast<microseconds>(end - start).count() << " microsegundos" << endl;
+
+    // Quick Sort
+    vector<int> quickArr = arr;
+    start = high_resolution_clock::now();
+    quickSort(quickArr, 0, quickArr.size() - 1);
+    end = high_resolution_clock::now();
+    cout << "\nQuick Sort: ";
+    printArray(quickArr);
+    cout << "Comparações: " << quickComparisons << endl;
+    cout << "Tempo: " << duration_cast<microseconds>(end - start).count() << " microsegundos" << endl;
+
+    // Bucket Sort
+    vector<int> bucketArr = arr;
+    start = high_resolution_clock::now();
+    bucketSort(bucketArr);
+    end = high_resolution_clock::now();
+    cout << "\nBucket Sort: ";
+    printArray(bucketArr);
+    cout << "Comparações: " << bucketComparisons << endl;
+    cout << "Tempo: " << duration_cast<microseconds>(end - start).count() << " microsegundos" << endl;
+
+    // Radix Sort
+    vector<int> radixArr = arr;
+    start = high_resolution_clock::now();
+    radixSort(radixArr);
+    end = high_resolution_clock::now();
+    cout << "\nRadix Sort: ";
+    printArray(radixArr);
+    cout << "Comparações: " << radixComparisons << endl;
+    cout << "Tempo: " << duration_cast<microseconds>(end - start).count() << " microsegundos" << endl;
+
+    return 0;
+}

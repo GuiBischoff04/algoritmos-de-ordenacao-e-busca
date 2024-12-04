@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+using namespace std;
+
+void insertionSort(vector<float>& bucket) {
+    int n = bucket.size();
+    for (int i = 1; i < n; i++) {
+        float key = bucket[i];
+        int j = i - 1;
+
+        while (j >= 0 && bucket[j] > key) {
+            bucket[j + 1] = bucket[j];
+            j--;
+        }
+        bucket[j + 1] = key;
+    }
+}
+
+void bucketSort(vector<float>& arr) {
+    int n = arr.size();
+
+    vector<vector<float>> buckets(10);
+
+    for (int i = 0; i < n; i++) {
+        int index = arr[i] * 10;  // Encontra o índice do balde
+        buckets[index].push_back(arr[i]);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        if (!buckets[i].empty()) {
+            insertionSort(buckets[i]);
+        }
+    }
+
+    int index = 0;
+    for (int i = 0; i < 10; i++) {
+        for (float num : buckets[i]) {
+            arr[index++] = num;
+        }
+    }
+}
+
+void printArray(const vector<float>& arr) {
+    for (float num : arr) {
+        cout << num << " ";
+    }
+    cout << endl;
+}
+
+int main() {
+    vector<float> arr = {0.42, 0.32, 0.56, 0.23, 0.12, 0.75, 0.88, 0.99, 0.53};
+
+    cout << "Vetor original: ";
+    printArray(arr);
+
+    bucketSort(arr);
+
+    cout << "Vetor ordenado: ";
+    printArray(arr);
+
+    return 0;
+}

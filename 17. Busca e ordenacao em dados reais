@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+struct Aluno {
+    string nome;
+    int nota;
+
+    bool operator<(const Aluno& outro) const {
+        return nota < outro.nota;
+    }
+};
+
+void bucketSort(vector<Aluno>& alunos) {
+    const int maxNota = 100;
+    vector<vector<Aluno>> buckets(maxNota + 1);
+
+    for (const Aluno& aluno : alunos) {
+        buckets[aluno.nota].push_back(aluno);
+    }
+
+    alunos.clear();
+    for (auto& bucket : buckets) {
+        for (const Aluno& aluno : bucket) {
+            alunos.push_back(aluno);
+        }
+    }
+}
+
+int interpolationSearch(const vector<Aluno>& alunos, int nota) {
+    int low = 0, high = alunos.size() - 1;
+
+    while (low <= high && nota >= alunos[low].nota && nota <= alunos[high].nota) {
+        int pos = low + ((nota - alunos[low].nota) * (high - low)) / (alunos[high].nota - alunos[low].nota);
+
+        if (alunos[pos].nota == nota) {
+            return pos;
+        } else if (alunos[pos].nota < nota) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+
+    return -1; // Nota não encontrada
+}
+
+int main() {
+    vector<Aluno> alunos = {
+        {"Alice", 85}, {"Bruno", 70}, {"Carlos", 95}, {"Diana", 60},
+        {"Eduardo", 75}, {"Fernanda", 50}, {"Gabriela", 100}, {"Henrique", 80}
+    };
+
+    cout << "Lista original de alunos:\n";
+    for (const Aluno& aluno : alunos) {
+        cout << aluno.nome << " - Nota: " << aluno.nota << "\n";
+    }
+
+    bucketSort(alunos);
+
+    cout << "\nLista de alunos ordenada por nota:\n";
+    for (const Aluno& aluno : alunos) {
+        cout << aluno.nome << " - Nota: " << aluno.nota << "\n";
+    }
+
+    int notaBusca;
+    cout << "\nDigite a nota que deseja buscar: ";
+    cin >> notaBusca;
+
+    int indice = interpolationSearch(alunos, notaBusca);
+    if (indice != -1) {
+        cout << "Aluno encontrado:\n";
+        cout << alunos[indice].nome << " - Nota: " << alunos[indice].nota << "\n";
+    } else {
+        cout << "Nenhum aluno encontrado com a nota " << notaBusca << ".\n";
+    }
+
+    return 0;
+}

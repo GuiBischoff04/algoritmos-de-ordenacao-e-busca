@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+void swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int partitionFirst(vector<int>& arr, int low, int high) {
+    int pivot = arr[low];
+    int left = low + 1;
+    int right = high;
+
+    while (left <= right) {
+        while (left <= right && arr[left] <= pivot)
+            left++;
+        while (left <= right && arr[right] > pivot)
+            right--;
+        if (left < right)
+            swap(arr[left], arr[right]);
+    }
+    swap(arr[low], arr[right]);
+    return right;
+}
+
+int partitionLast(vector<int>& arr, int low, int high) {
+    int pivot = arr[high];
+    int left = low;
+    int right = high - 1;
+
+    while (left <= right) {
+        while (left <= right && arr[left] <= pivot)
+            left++;
+        while (left <= right && arr[right] > pivot)
+            right--;
+        if (left < right)
+            swap(arr[left], arr[right]);
+    }
+    swap(arr[high], arr[left]);
+    return left;
+}
+
+int partitionMiddle(vector<int>& arr, int low, int high) {
+    int mid = low + (high - low) / 2;
+    swap(arr[mid], arr[low]);
+    return partitionFirst(arr, low, high);
+}
+
+void quickSort(vector<int>& arr, int low, int high, int criterion) {
+    if (low < high) {
+        int pivotIndex;
+        if (criterion == 1)
+            pivotIndex = partitionFirst(arr, low, high);
+        else if (criterion == 2)
+            pivotIndex = partitionLast(arr, low, high);
+        else
+            pivotIndex = partitionMiddle(arr, low, high);
+
+        quickSort(arr, low, pivotIndex - 1, criterion);
+        quickSort(arr, pivotIndex + 1, high, criterion);
+    }
+}
+
+int main() {
+    vector<int> arr = {34, 7, 23, 32, 5, 62};
+    int criterion;
+
+    cout << "Escolha o critério para o pivô: 1 (primeiro), 2 (último), 3 (meio): ";
+    cin >> criterion;
+
+    quickSort(arr, 0, arr.size() - 1, criterion);
+
+    cout << "Array ordenado: ";
+    for (int num : arr)
+        cout << num << " ";
+    cout << endl;
+
+    return 0;
+}

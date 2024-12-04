@@ -1,0 +1,151 @@
+// __________Merge Sort para palavras___________
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+void merge(vector<string>& arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    vector<string> leftArr(n1), rightArr(n2);
+
+    for (int i = 0; i < n1; i++)
+        leftArr[i] = arr[left + i];
+    for (int i = 0; i < n2; i++)
+        rightArr[i] = arr[mid + 1 + i];
+
+    int i = 0, j = 0, k = left;
+
+    while (i < n1 && j < n2) {
+        if (leftArr[i] <= rightArr[j]) {
+            arr[k] = leftArr[i];
+            i++;
+        } else {
+            arr[k] = rightArr[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = leftArr[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = rightArr[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(vector<string>& arr, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        merge(arr, left, mid, right);
+    }
+}
+
+int main() {
+    vector<string> words = {"banana", "apple", "grape", "cherry", "date"};
+
+    mergeSort(words, 0, words.size() - 1);
+
+    cout << "Sorted words (Merge Sort): ";
+    for (const string& word : words)
+        cout << word << " ";
+    cout << endl;
+
+    return 0;
+}
+
+
+// ______________________Quick Sort para palavras_______________
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+int partition(vector<string>& arr, int low, int high) {
+    string pivot = arr[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return i + 1;
+}
+
+void quickSort(vector<string>& arr, int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int main() {
+    vector<string> words = {"banana", "apple", "grape", "cherry", "date"};
+
+    quickSort(words, 0, words.size() - 1);
+
+    cout << "Sorted words (Quick Sort): ";
+    for (const string& word : words)
+        cout << word << " ";
+    cout << endl;
+
+    return 0;
+}
+
+// __________Binary Search como busca___________
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+bool binarySearch(const vector<string>& arr, const string& target) {
+    int left = 0, right = arr.size() - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        if (arr[mid] == target)
+            return true;
+        else if (arr[mid] < target)
+            left = mid + 1;
+        else
+            right = mid - 1;
+    }
+
+    return false;
+}
+
+int main() {
+    vector<string> words = {"apple", "banana", "cherry", "date", "grape"};
+    string target;
+
+    cout << "Enter a word to search: ";
+    cin >> target;
+
+    if (binarySearch(words, target)) {
+        cout << "Word '" << target << "' is present in the list." << endl;
+    } else {
+        cout << "Word '" << target << "' is NOT present in the list." << endl;
+    }
+
+    return 0;
+}

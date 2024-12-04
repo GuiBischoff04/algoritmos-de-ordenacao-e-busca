@@ -1,4 +1,4 @@
-// __________Merge Sort para palavras___________
+//  Merge Sort para palavras 
 
 #include <iostream>
 #include <vector>
@@ -66,8 +66,7 @@ int main() {
     return 0;
 }
 
-
-// ______________________Quick Sort para palavras_______________
+//  Quick Sort para palavras 
 
 #include <iostream>
 #include <vector>
@@ -110,7 +109,7 @@ int main() {
     return 0;
 }
 
-// __________Binary Search como busca___________
+//  Binary Search como busca 
 
 #include <iostream>
 #include <vector>
